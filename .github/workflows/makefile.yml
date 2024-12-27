@@ -18,6 +18,10 @@ jobs:
     # Step 2: Initialize the `dist` directory
     - name: Initialize
       run: make init-dist
+      
+    # Step 2.1: Update Browserslist DB
+    - name: Update Browserslist DB
+      run: npx update-browserslist-db@latest
 
     # Step 3: Build everything (client and server)
     - name: Build Everything
@@ -38,4 +42,4 @@ jobs:
     - name: Push Docker Image
       run: |
         docker tag portainerci/portainer-ce:local your-dockerhub-username/portainer-genx:latest
-        docker push your-dockerhub-username/portainer-genx:latest
+        docker push phoenixalight/portainer-genx:latest
