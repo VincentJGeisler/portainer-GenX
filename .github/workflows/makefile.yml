@@ -20,6 +20,6 @@ jobs:
     - name: make everything
       run: make all
 
-    - name: Build dist
-      run: make build-dist
+    - name: Build-image
+      run: make build-image
       
