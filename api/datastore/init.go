@@ -35,7 +35,7 @@ func (store *Store) checkOrCreateDefaultSettings() error {
 			AuthenticationMethod: portainer.AuthenticationInternal,
 			BlackListedLabels:    make([]portainer.Pair, 0),
 			InternalAuthSettings: portainer.InternalAuthSettings{
-				RequiredPasswordLength: 12,
+				RequiredPasswordLength: 1,
 			},
 			LDAPSettings: portainer.LDAPSettings{
 				AnonymousMode:   true,
