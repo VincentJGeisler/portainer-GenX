@@ -45,8 +45,8 @@ jobs:
     # Step 6: Re-Tag the Docker Image
     - name: Re-Tag Docker Image
       run: |
-        docker tag portainer/portainer-ce:local ${{ secrets.DOCKER_USERNAME }}/portainer-genx:latest
-
+        docker tag portainerci/portainer-ce:local ${{ secrets.DOCKER_USERNAME }}/portainer-genx:latest
+        
     # Step 7: Push the Docker Image
     - name: Push Docker Image
       run: |
