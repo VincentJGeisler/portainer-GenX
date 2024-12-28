@@ -37,7 +37,11 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
+        
+    # Debugging step - List Docker images
+    - name: List Docker Images
+      run: docker images
+      
     # Step 6: Re-Tag the Docker Image
     - name: Re-Tag Docker Image
       run: |
