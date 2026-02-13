@@ -30,12 +30,12 @@ func (store *Store) checkOrCreateDefaultSettings() error {
 	// TODO: these need to also be applied when importing
 	settings, err := store.SettingsService.Settings()
 	if store.IsErrObjectNotFound(err) {
-		defaultSettings := &portainer.Settings{
-			AuthenticationMethod: portainer.AuthenticationInternal,
-			BlackListedLabels:    make([]portainer.Pair, 0),
-			InternalAuthSettings: portainer.InternalAuthSettings{
-				RequiredPasswordLength: 12,
-			},
+	defaultSettings := &portainer.Settings{
+		AuthenticationMethod: portainer.AuthenticationInternal,
+		BlackListedLabels:    make([]portainer.Pair, 0),
+		InternalAuthSettings: portainer.InternalAuthSettings{
+			RequiredPasswordLength: 1,
+		},
 			LDAPSettings: portainer.LDAPSettings{
 				AnonymousMode:   true,
 				AutoCreateUsers: true,
