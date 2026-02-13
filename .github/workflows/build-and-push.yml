@@ -22,7 +22,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '22'
         
     # Step 3: Set up pnpm
     - name: Setup pnpm
@@ -48,9 +48,9 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
     
-    # Step 6: Build everything (creates dist/ directory)
+    # Step 6: Install dependencies and build
     - name: Build Portainer
-      run: make all
+      run: pnpm install --no-frozen-lockfile && make all
       env:
         ENV: production
 
