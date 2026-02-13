@@ -19,6 +19,10 @@ on:
         type: boolean
         default: false
 
+# Don't run on push - only scheduled or manual
+# (The workflow may show as "triggered" when the file is modified, 
+#  but it won't actually execute - that's just GitHub's syntax validation)
+
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
