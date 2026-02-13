@@ -50,9 +50,9 @@ jobs:
     
     # Step 6: Install dependencies and build
     - name: Build Portainer
-      run: pnpm install --no-frozen-lockfile && make all
-      env:
-        ENV: production
+      run: |
+        pnpm install --no-frozen-lockfile
+        make all ENV=production
 
     # Step 7: Build the Docker image
     - name: Build Docker Image
