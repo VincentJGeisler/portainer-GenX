@@ -1,0 +1,96 @@
+name: Auto-Merge Upstream
+
+on:
+  # Run weekly on Monday at 9 AM UTC
+  schedule:
+    - cron: '0 9 * * 1'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (don\'t push)'
+        required: false
+        type: boolean
+        default: false
+      force:
+        description: 'Force push'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history needed for merge
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Configure Git
+      run: |
+        git config user.name "GenX Auto-Merge Bot"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Add upstream remote
+      run: |
+        git remote add upstream https://github.com/portainer/portainer.git || true
+        git fetch upstream develop
+    
+    - name: Check if update needed
+      id: check
+      run: |
+        COMMITS_BEHIND=$(git rev-list --count HEAD..upstream/develop)
+        echo "commits_behind=$COMMITS_BEHIND" >> $GITHUB_OUTPUT
+        if [ "$COMMITS_BEHIND" -eq "0" ]; then
+          echo "already_updated=true" >> $GITHUB_OUTPUT
+          echo "✓ Already up-to-date with upstream!"
+        else
+          echo "already_updated=false" >> $GITHUB_OUTPUT
+          echo "⚠ $COMMITS_BEHIND commits behind upstream"
+        fi
+    
+    - name: Run auto-merge script
+      if: steps.check.outputs.already_updated == 'false'
+      run: |
+        chmod +x auto-merge.py
+        
+        # Build command with flags
+        CMD="python3 auto-merge.py --auto-push"
+        
+        if [ "${{ inputs.dry_run }}" == "true" ]; then
+          CMD="$CMD --dry-run"
+        fi
+        
+        if [ "${{ inputs.force }}" == "true" ]; then
+          CMD="$CMD --force"
+        fi
+        
+        echo "Running: $CMD"
+        $CMD
+    
+    - name: Create summary
+      if: steps.check.outputs.already_updated == 'false'
+      run: |
+        echo "## Auto-Merge Complete! 🎉" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commits merged**: ${{ steps.check.outputs.commits_behind }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: Merged and pushed" >> $GITHUB_STEP_SUMMARY
+        echo "- **Docker build**: Will trigger automatically" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The Docker image will be built and pushed automatically by the build workflow." >> $GITHUB_STEP_SUMMARY
+    
+    - name: Already up-to-date
+      if: steps.check.outputs.already_updated == 'true'
+      run: |
+        echo "## Already Up-to-Date ✓" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "No upstream changes to merge." >> $GITHUB_STEP_SUMMARY
